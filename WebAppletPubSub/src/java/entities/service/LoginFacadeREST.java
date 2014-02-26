@@ -155,6 +155,7 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
         final String format = "%s\t\t%s\n";
         
         String answer=String.format(format, "Username", "Password");
+        answer += "============================\n";
         
         List<Login> users = em.createNamedQuery("Login.findAll").getResultList();
         for(Login u:users){
