@@ -6,6 +6,7 @@
 package receiver;
 
 import applet.MessageReceiverApplet;
+import applet.UserTable;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -50,9 +51,14 @@ public class MessageReceiver implements MessageListener, ExceptionListener {
     }
 
     MessageReceiverApplet applet;
+    UserTable userApplet;
 
     public void setApplet(MessageReceiverApplet applet) {
         this.applet = applet;
+    }
+    
+    public void setUserApplet(UserTable applet) {
+        this.userApplet = applet;
     }
 
     public void onMessage(Message message) {
@@ -63,11 +69,14 @@ public class MessageReceiver implements MessageListener, ExceptionListener {
              System.out.println("Sender:"+communicationMessage.getName());
              System.out.println("Message:"+communicationMessage.getMessage());
              */
-            applet.print("Sender:" + communicationMessage.getName() + "\n"
-                    + "Message:" + communicationMessage.getMessage());
+            //applet.print("Sender:" + communicationMessage.getName() + "\n"
+                    //+ "Message:" + communicationMessage.getMessage());
+            userApplet.refresh();
 
         } catch (JMSException ex) {
             Logger.getLogger(ProduceSender.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MessageReceiver.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

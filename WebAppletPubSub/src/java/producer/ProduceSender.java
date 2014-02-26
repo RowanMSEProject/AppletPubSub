@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package producer;
 
 import java.io.BufferedReader;
@@ -31,19 +30,30 @@ import receiver.MessageReceiver;
  *
  * @author junxin
  */
-public class ProduceSender{
-    public static final String TOPIC="jms/myTopic1";
+public class ProduceSender {
+
+    public static final String TOPIC = "jms/myTopic1";
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws NamingException, JMSException, IOException {
-        ProduceSender mr=new ProduceSender();
-        Context initialContext=ProduceSender.getInitialContext();
-        Topic topic=(Topic)initialContext.lookup(ProduceSender.TOPIC);
-        TopicConnectionFactory topicConnectionFactory=(TopicConnectionFactory)initialContext.lookup("jms/myTopicFactory");
-        TopicConnection topicConnection=topicConnectionFactory.createTopicConnection();
+        ProduceSender mr = new ProduceSender();
+        Context initialContext = ProduceSender.getInitialContext();
+        Topic topic = (Topic) initialContext.lookup(ProduceSender.TOPIC);
+        TopicConnectionFactory topicConnectionFactory = (TopicConnectionFactory) initialContext.lookup("jms/myTopicFactory");
+        TopicConnection topicConnection = topicConnectionFactory.createTopicConnection();
         topicConnection.start();
         mr.publish(topicConnection, topic);
+    }
+
+    public ProduceSender() throws JMSException, NamingException, IOException {
+        Context initialContext = ProduceSender.getInitialContext();
+        Topic topic = (Topic) initialContext.lookup(ProduceSender.TOPIC);
+        TopicConnectionFactory topicConnectionFactory = (TopicConnectionFactory) initialContext.lookup("jms/myTopicFactory");
+        TopicConnection topicConnection = topicConnectionFactory.createTopicConnection();
+        topicConnection.start();
+        publish(topicConnection, topic);
     }
 
 //    public void onMessage(Message message) {
@@ -56,33 +66,32 @@ public class ProduceSender{
 //            Logger.getLogger(ProduceSender.class.getName()).log(Level.SEVERE, null, ex);
 //        }
 //    }
-    
-    public void publish(TopicConnection topicConnection, Topic topic) throws JMSException, IOException{
-        TopicSession publishSession=topicConnection.createTopicSession(false, AUTO_ACKNOWLEDGE);
-        TopicPublisher topicPublisher=publishSession.createPublisher(topic);
-        BufferedReader reader=new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Please enter your username:");
-        String username=reader.readLine();
-        String message=null;
-        while(true){
-            message=reader.readLine();
-            if(message.equalsIgnoreCase("exit")){
-                topicConnection.close();
-                System.exit(0);
-            }else{
-                ObjectMessage objectMessage=publishSession.createObjectMessage();
-                objectMessage.setObject(new CommunicationMessage(username,message));
-                topicPublisher.publish(objectMessage);
-            }
-        }
+    public void publish(TopicConnection topicConnection, Topic topic) throws JMSException, IOException {
+        TopicSession publishSession = topicConnection.createTopicSession(false, AUTO_ACKNOWLEDGE);
+        TopicPublisher topicPublisher = publishSession.createPublisher(topic);
+//        BufferedReader reader=new BufferedReader(new InputStreamReader(System.in));
+//        System.out.println("Please enter your username:");
+//        String username=reader.readLine();
+//        String message=null;
+//        while(true){
+//            message=reader.readLine();
+//            if(message.equalsIgnoreCase("exit")){
+//                topicConnection.close();
+//                System.exit(0);
+//            }else{
+        ObjectMessage objectMessage = publishSession.createObjectMessage();
+        objectMessage.setObject(new CommunicationMessage("jun", "he"));
+        topicPublisher.publish(objectMessage);
+        //}
+        //}
     }
-    
-    public static Context getInitialContext() throws JMSException, NamingException{
-        Properties properties=new Properties();
-        properties.setProperty("java.naming.factory.initial","com.sun.enterprise.naming.SerialInitContextFactory");
-        properties.setProperty("java.naming.factory.url.pkgs","com.sun.enterprise.naming");
-        properties.setProperty("java.naming.provider.url","iiop://localhost:3700");
+
+    public static Context getInitialContext() throws JMSException, NamingException {
+        Properties properties = new Properties();
+        properties.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
+        properties.setProperty("java.naming.factory.url.pkgs", "com.sun.enterprise.naming");
+        properties.setProperty("java.naming.provider.url", "iiop://localhost:3700");
         return new InitialContext(properties);
     }
-    
+
 }
