@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package applet;
 
 import java.io.BufferedReader;
@@ -32,7 +31,7 @@ public class UserTable extends JApplet {
 
     JTextArea textarea;
     MessageReceiver mr;
-    
+
     public void init() {
         try {
             javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
@@ -47,36 +46,37 @@ public class UserTable extends JApplet {
                     } catch (IOException ex) {
                         Logger.getLogger(MessageReceiverApplet.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                   
+
                 }
             });
         } catch (Exception e) {
             System.err.println("createGUI didn't successfully complete");
         }
     }
-    
+
     void createGUI() throws JMSException, NamingException, IOException {
 
         mr = new MessageReceiver();
         mr.setUserApplet(this);
         textarea = new JTextArea("The start!");
         add(textarea);
-        setSize(200, 200);
+        setSize(300, 300);
 
     }
-    
-    public void refresh() throws MalformedURLException, IOException{
+
+    public void refresh() throws MalformedURLException, IOException {
         URL oracle = new URL("http://localhost:8080/WebAppletPubSub/webresources/entities.login/users");
         BufferedReader in = new BufferedReader(
-        new InputStreamReader(oracle.openStream()));
+                new InputStreamReader(oracle.openStream()));
 
         String inputLine;
         textarea.setText("");
-        while ((inputLine = in.readLine()) != null)
-            textarea.append(inputLine+"\n");
+        while ((inputLine = in.readLine()) != null) {
+            textarea.append(inputLine + "\n");
+        }
         in.close();
     }
-    
+
     public void print(String message) {
 
         textarea.setText(message);

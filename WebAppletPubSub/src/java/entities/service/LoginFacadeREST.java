@@ -117,6 +117,7 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
             super.create(newUser);
             try {
                 ProduceSender ps=new ProduceSender();
+                ps.publish();
                 
             } catch (JMSException ex) {
                 Logger.getLogger(LoginFacadeREST.class.getName()).log(Level.SEVERE, null, ex);
@@ -151,10 +152,13 @@ public class LoginFacadeREST extends AbstractFacade<Login> {
     @Path("/users")
     @Consumes({"application/x-www-form-urlencoded", "application/xml", "application/json"})
     public String getUsers(){
-        String answer="Username  |  Password\n";
+        final String format = "%s\t\t%s\n";
+        
+        String answer=String.format(format, "Username", "Password");
+        
         List<Login> users = em.createNamedQuery("Login.findAll").getResultList();
         for(Login u:users){
-            answer+=u.getUsername()+"|"+u.getPassword()+"\n";
+            answer+=String.format(format, u.getUsername(),u.getPassword());
         }
         return answer;
     }

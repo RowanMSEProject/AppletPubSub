@@ -39,51 +39,27 @@ public class ProduceSender {
      */
     public static void main(String[] args) throws NamingException, JMSException, IOException {
         ProduceSender mr = new ProduceSender();
-        Context initialContext = ProduceSender.getInitialContext();
-        Topic topic = (Topic) initialContext.lookup(ProduceSender.TOPIC);
-        TopicConnectionFactory topicConnectionFactory = (TopicConnectionFactory) initialContext.lookup("jms/myTopicFactory");
-        TopicConnection topicConnection = topicConnectionFactory.createTopicConnection();
-        topicConnection.start();
-        mr.publish(topicConnection, topic);
+        
+        mr.publish();
     }
 
-    public ProduceSender() throws JMSException, NamingException, IOException {
+    public void publish() 
+            throws JMSException, NamingException, IOException {
+        TopicConnection topicConnection;
+        Topic topic;
         Context initialContext = ProduceSender.getInitialContext();
-        Topic topic = (Topic) initialContext.lookup(ProduceSender.TOPIC);
+        topic = (Topic) initialContext.lookup(ProduceSender.TOPIC);
         TopicConnectionFactory topicConnectionFactory = (TopicConnectionFactory) initialContext.lookup("jms/myTopicFactory");
-        TopicConnection topicConnection = topicConnectionFactory.createTopicConnection();
+        topicConnection = topicConnectionFactory.createTopicConnection();
         topicConnection.start();
-        publish(topicConnection, topic);
-    }
-
-//    public void onMessage(Message message) {
-//        try {
-//            ObjectMessage objectMessage=(ObjectMessage) message;
-//            CommunicationMessage communicationMessage=(CommunicationMessage)objectMessage.getObject();
-//            System.out.print("Sender:"+communicationMessage.getName());
-//            System.out.print("Message:"+communicationMessage.getMessage());
-//        } catch (JMSException ex) {
-//            Logger.getLogger(ProduceSender.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
-    public void publish(TopicConnection topicConnection, Topic topic) throws JMSException, IOException {
+        
         TopicSession publishSession = topicConnection.createTopicSession(false, AUTO_ACKNOWLEDGE);
         TopicPublisher topicPublisher = publishSession.createPublisher(topic);
-//        BufferedReader reader=new BufferedReader(new InputStreamReader(System.in));
-//        System.out.println("Please enter your username:");
-//        String username=reader.readLine();
-//        String message=null;
-//        while(true){
-//            message=reader.readLine();
-//            if(message.equalsIgnoreCase("exit")){
-//                topicConnection.close();
-//                System.exit(0);
-//            }else{
+
         ObjectMessage objectMessage = publishSession.createObjectMessage();
         objectMessage.setObject(new CommunicationMessage("jun", "he"));
         topicPublisher.publish(objectMessage);
-        //}
-        //}
+        
     }
 
     public static Context getInitialContext() throws JMSException, NamingException {
